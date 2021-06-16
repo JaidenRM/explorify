@@ -1,25 +1,34 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
+import { Login } from './components/Login';
+import GlobalStyle from './themes/global-styles';
+import { ThemeProvider } from 'styled-components';
+import { darkTheme } from './themes/dark';
+import { lightTheme } from './themes/light';
+import { useEffect } from 'react';
+import { Dashboard } from './components/Dashboard';
+import { TopMenu } from './components/TopMenu';
 
-function App() {
+const App = () => {
+  const [theme, setTheme] = useState('Dark');
+  const [code, setCode] = useState('');
+  const toggleTheme = () => setTheme(prev => prev === 'Dark' ? 'Light' : 'Dark');
+  const currentTheme = theme === 'Dark' ? darkTheme : lightTheme;
+
+  useEffect(() => {
+    const code = new URLSearchParams(window.location.search).get('code');
+
+    if (code) setCode(code);
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ThemeProvider theme={currentTheme}>
+      <GlobalStyle/>
+      <TopMenu
+        onThemeToggle={toggleTheme}
+        currentTheme={theme}
+      />
+      { code ? <Dashboard code={code}/> : <Login/> }
+    </ThemeProvider>
   );
 }
 
