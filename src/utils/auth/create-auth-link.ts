@@ -8,7 +8,7 @@ interface SpotifyAuthProps {
 
 export const createSpotifyAuthLink = ({
     baseUrl = 'https://accounts.spotify.com/authorize',
-    clientId = '1aebf6d5338c4ec282ea889bf5f5cc6f',
+    clientId = process.env.REACT_APP_CLIENT_ID,
     responseType = 'code',
     redirectUri = 'http://localhost:3000',
     scopes = [
