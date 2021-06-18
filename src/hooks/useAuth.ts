@@ -1,8 +1,9 @@
 import axios, { AxiosResponse } from "axios";
+import { stringify } from "query-string";
 import { useEffect, useState } from "react"
 
 // Note the use snake_case is in tandem of the Spotify API naming
-interface SpotifyTokenAuthResponse {
+interface SpotifyTokenResponse {
     access_token: string // used to access their web api
     token_type: string // always 'Bearer'
     scope: string // scopes we are allowed
@@ -10,7 +11,7 @@ interface SpotifyTokenAuthResponse {
     refresh_token: string // used this in lieu of the auth code to get another token set
 }
 
-interface SpotifyTokenAuthRequest {
+interface SpotifyAuthCodeRequest {
     grant_type: string // 'authorization_code'
     code: string // the actual auth code received earlier
     redirect_uri: string // needs to match OG one used
@@ -18,37 +19,38 @@ interface SpotifyTokenAuthRequest {
     client_secret: string // ditto^
 }
 
+interface SpotifyRefreshTokenRequest {
+    grant_type: string // 'refresh_token'
+    refresh_token: string
+    client_id: string
+    client_secret: string
+}
+
+const spotifyTokenUrl = 'https://accounts.spotify.com/api/token';
+const headers = {
+    'Content-Type': 'application/x-www-form-urlencoded',
+    'Accept': 'application/json',
+}
+
 export const useAuth = (code: string) => {
     const [isLoading, setIsLoading] = useState(true);
-    const [accessToken, setAccessToken] = useState('');
-    const [refreshToken, setRefreshToken] = useState('');
+    const [accessToken, setAccessToken] = useState<string>();
+    const [refreshToken, setRefreshToken] = useState<string>();
     const [expiresIn, setExpiresIn] = useState<number>();
-    const [error, setError] = useState();
+    const [error, setError] = useState<string>();
 
     useEffect(() => {
-        const spotifyTokenUrl = 'https://accounts.spotify.com/api/token';
-        const body2 = {
+        const body = {
             grant_type: 'authorization_code',
             code,
-            redirect_uri: 'http://localhost:3000',
+            redirect_uri: process.env.REACT_APP_AUTH_REDIRECT_URI,
             client_id: process.env.REACT_APP_CLIENT_ID,
             client_secret: process.env.REACT_APP_CLIENT_SECRET,
         };
-        const body = new URLSearchParams();
-        body.append('grant_type', 'authorization_code');
-        body.append('code', code);
-        body.append('redirect_uri', 'http://localhost:3000');
-        body.append('client_id', process.env.REACT_APP_CLIENT_ID!);
-        body.append('client_secret', process.env.REACT_APP_CLIENT_SECRET!);
 
-        const headers = {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            Accept: 'application/json',
-        }
-        console.log(body);
-        console.log({ headers });
         axios
-            .post<SpotifyTokenAuthRequest, AxiosResponse<SpotifyTokenAuthResponse>>(spotifyTokenUrl, body, { headers })
+            .post<SpotifyAuthCodeRequest, AxiosResponse<SpotifyTokenResponse>>(
+                spotifyTokenUrl, stringify(body), { headers })
             .then(res => {
                 const { access_token, refresh_token, expires_in } = res.data;
 
@@ -57,17 +59,49 @@ export const useAuth = (code: string) => {
                 setExpiresIn(expires_in);
                 setIsLoading(false);
 
-                console.log(res);
-
                 // clean up url and remove code from it
                 window.history.pushState({}, '', '/'); 
             })
             .catch(err => {
-                setError(err);
-                console.log(err);
-                // window.location.href = '/';
+                setError(err.message);
+                window.location.href = '/';
             });
     }, [code]);
 
-    return [accessToken, isLoading, error];
+    useEffect(() => {
+        if (!refreshToken || !expiresIn) return;
+
+        const body = {
+            grant_type: 'refresh_token',
+            refresh_token: refreshToken,
+        };
+        const base64Header = {
+            headers: {
+                Authorization: `Basic ${btoa(process.env.REACT_APP_CLIENT_ID + ':' + process.env.REACT_APP_CLIENT_SECRET)}`,
+            }
+        };
+
+        // interval bc this is a recurring process
+        const timeout = setInterval(() => {
+            axios
+                .post<SpotifyRefreshTokenRequest, AxiosResponse<SpotifyTokenResponse>>(
+                    spotifyTokenUrl, stringify(body), base64Header)
+                .then(res => {
+                    const { access_token, refresh_token, expires_in } = res.data;
+
+                    setAccessToken(access_token);
+                    setExpiresIn(expires_in);
+                    if (refresh_token) setRefreshToken(refresh_token);
+                })
+                .catch(err => {
+                    setError(err.message);
+                    window.location.href = '/';
+                });
+        }, (expiresIn - 60) * 1000); //1 min before expiry
+
+        //clear on error
+        return () => clearInterval(timeout);
+    }, [expiresIn, refreshToken])
+
+    return { accessToken, isLoading, error };
 }
