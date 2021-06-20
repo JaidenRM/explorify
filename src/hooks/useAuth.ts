@@ -43,7 +43,7 @@ export const useAuth = (code: string) => {
         const body = {
             grant_type: 'authorization_code',
             code,
-            redirect_uri: process.env.REACT_APP_AUTH_REDIRECT_URI,
+            redirect_uri: process.env.REACT_APP_AUTH_ROOT_URL,
             client_id: process.env.REACT_APP_CLIENT_ID,
             client_secret: process.env.REACT_APP_CLIENT_SECRET,
         };
@@ -64,7 +64,6 @@ export const useAuth = (code: string) => {
             })
             .catch(err => {
                 setError(err.message);
-                window.location.href = '/';
             });
     }, [code]);
 
@@ -95,7 +94,6 @@ export const useAuth = (code: string) => {
                 })
                 .catch(err => {
                     setError(err.message);
-                    window.location.href = '/';
                 });
         }, (expiresIn - 60) * 1000); //1 min before expiry
 

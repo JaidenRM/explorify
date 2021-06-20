@@ -1966,6 +1966,11 @@
   resolved "https://registry.yarnpkg.com/@types/source-list-map/-/source-list-map-0.1.2.tgz#0078836063ffaf17412349bba364087e0ac02ec9"
   integrity sha512-K5K+yml8LTo9bWJI/rECfIPrGgxdpeNbj+d53lwN4QjW1MCwlkhUms+gtdzigTeUyBr09+u8BwOIY3MXvHdcsA==
 
+"@types/spotify-api@^0.0.10":
+  version "0.0.10"
+  resolved "https://registry.yarnpkg.com/@types/spotify-api/-/spotify-api-0.0.10.tgz#fea56cc3370bce961c03a17f2cf28d397ae064c2"
+  integrity sha512-jR/iIZVfCDjk4QEoGpOYcVFUw2LQi9EGKNpLwUf7iIkhss/t4c3FpwT9qRPeNme6mEzCGMYr1LdP3c1nSvBzDw==
+
 "@types/stack-utils@^2.0.0":
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/@types/stack-utils/-/stack-utils-2.0.0.tgz#7036640b4e21cc2f259ae826ce843d277dad8cff"

@@ -7,6 +7,7 @@ interface IPalette {
 
 declare module 'styled-components' {
   export interface DefaultTheme {
+    id: string
     palette: {
       body: string
       text: string

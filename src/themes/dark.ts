@@ -1,6 +1,7 @@
 import { DefaultTheme } from 'styled-components';
 
 export const darkTheme: DefaultTheme = {
+    id: 'dark',
     palette: {
         body: '#191414',
         text: '#FFFFFF',

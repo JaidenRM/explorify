@@ -7,6 +7,7 @@ const GlobalStyle = createGlobalStyle`
     background-color: ${({ theme }) => theme.palette.body };
     color: ${({ theme }) => theme.palette.text };
     font-family: Open-Sans, Helvetica, Sans-Serif;
+    font-size: 1rem;
 
     h1 {
         font-size: 3.5rem;

@@ -10,10 +10,10 @@ export const createSpotifyAuthLink = ({
     baseUrl = 'https://accounts.spotify.com/authorize',
     clientId = process.env.REACT_APP_CLIENT_ID,
     responseType = 'code',
-    redirectUri = 'http://localhost:3000',
+    redirectUri = process.env.REACT_APP_AUTH_ROOT_URL,
     scopes = [
         'streaming', 'user-read-email', 'user-read-private', 'user-library-read',
-        'user-library-modify', 'user-read-playback-state', 'user-modify-playback-state'
+        'user-library-modify', 'user-read-playback-state', 'user-modify-playback-state',
     ]
 }: SpotifyAuthProps) => {
     const scopeJoined = scopes.join('%20');

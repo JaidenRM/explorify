@@ -1,5 +1,5 @@
-import { PrimaryButton } from "../ui/shared/buttons/primary-btn";
-import { createSpotifyAuthLink } from "../utils/auth/create-auth-link";
+import { PrimaryButton } from "../../shared/buttons/primary";
+import { createSpotifyAuthLink } from "../../../utils/auth/create-auth-link";
 import styled from 'styled-components';
 
 const LoginWrapper = styled.div`

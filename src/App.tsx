@@ -1,18 +1,16 @@
 import React, { useState } from 'react';
-import { Login } from './components/Login';
-import GlobalStyle from './themes/global-styles';
-import { ThemeProvider } from 'styled-components';
-import { darkTheme } from './themes/dark';
-import { lightTheme } from './themes/light';
+import { Login } from './ui/screens/login';
 import { useEffect } from 'react';
-import { Dashboard } from './components/Dashboard';
-import { TopMenu } from './components/TopMenu';
+import { Home } from './ui/screens/home';
+import { MyThemeProvider } from './contexts/theme-context';
+import styled from 'styled-components';
+
+const OuterWrapper = styled.div`
+
+`;
 
 const App = () => {
-  const [theme, setTheme] = useState('Dark');
-  const [code, setCode] = useState('');
-  const toggleTheme = () => setTheme(prev => prev === 'Dark' ? 'Light' : 'Dark');
-  const currentTheme = theme === 'Dark' ? darkTheme : lightTheme;
+  const [code, setCode] = useState<string>();
 
   useEffect(() => {
     const code = new URLSearchParams(window.location.search).get('code');
@@ -21,14 +19,11 @@ const App = () => {
   }, []);
 
   return (
-    <ThemeProvider theme={currentTheme}>
-      <GlobalStyle/>
-      <TopMenu
-        onThemeToggle={toggleTheme}
-        currentTheme={theme}
-      />
-      { code ? <Dashboard code={code}/> : <Login/> }
-    </ThemeProvider>
+    <MyThemeProvider>
+      <OuterWrapper>
+        { code ? <Home code={code}/> : <Login/> }
+      </OuterWrapper>
+    </MyThemeProvider>
   );
 }
 
