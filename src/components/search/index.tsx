@@ -1,8 +1,8 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { PrimaryInput } from "../../ui/shared/inputs/primary";
 import { SearchTrackItem } from "./components/search-track-item";
+import { SpotifyApi } from "../../api/spotify";
 
 const OuterWrapper = styled.div`
     display: flex;
@@ -29,16 +29,12 @@ export const Search: React.FC<SearchProps> = ({
         if (!searchText) setResult(undefined);
         if (!accessToken) return;
 
-        const headers = {
-            'Authorization': 'Bearer ' + accessToken,
-        };
-
-        axios
-            .get(`https://api.spotify.com/v1/search?q=${searchText}&type=track`, { headers })
+        const spotifyApi = new SpotifyApi(accessToken);
+        spotifyApi.searchApi.searchTracks(searchText)
             .then(res => {
                 console.log(res);
                 setResult(res.data);
-            })
+            });
     }, [searchText, accessToken]);
 
     return (

@@ -6,7 +6,7 @@ import { WithLayout } from "../../../hoc/withLayout";
 import { Home } from "../../../ui/screens/home";
 import { SideMenu } from "../../../components/nav/side-menu";
 import { useState } from "react";
-import { Playlist } from "../playlists";
+import { PlaylistScreen } from "../playlists";
 
 const OuterWrapper = styled.div`
     width: 100%;
@@ -65,7 +65,9 @@ export const Dashboard: React.FC<DashboardProps> = ({
                             addTrackToQueue={addTrackToQueue}    
                         />}
                     {activeMenuItem === 1 && 
-                        <Playlist />}
+                        <PlaylistScreen 
+                            accessToken={accessToken}
+                        />}
                 </WithLayout> 
             }
         </OuterWrapper> 
