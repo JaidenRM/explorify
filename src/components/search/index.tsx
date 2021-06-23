@@ -31,10 +31,7 @@ export const Search: React.FC<SearchProps> = ({
 
         const spotifyApi = new SpotifyApi(accessToken);
         spotifyApi.searchApi.searchTracks(searchText)
-            .then(res => {
-                console.log(res);
-                setResult(res.data);
-            });
+            .then(res => setResult(res.data));
     }, [searchText, accessToken]);
 
     return (

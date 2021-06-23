@@ -28,7 +28,6 @@ export const SpotifyPlayer: React.FC<SpotifyPlayerProps> = ({
             play={play}
             callback={state => {
                 if (!state.isPlaying) setPlay(false);
-                console.log(state);
             }}
         />
     );

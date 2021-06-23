@@ -12,9 +12,6 @@ const OuterWrapper = styled.div`
 const App = () => {
   const [code, setCode] = useState<string>();
 
-  console.log(process.env.REACT_APP_CLIENT_ID);
-  console.log(process.env.REACT_APP_AUTH_ROOT_URL);
-
   useEffect(() => {
     const code = new URLSearchParams(window.location.search).get('code');
 
