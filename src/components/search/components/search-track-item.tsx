@@ -34,7 +34,7 @@ interface TrackItemProps {
     trackName: string
     albumnName: string
     durationMs: number
-    onClick: () => void
+    onClick?: () => void
 }
 
 const convertMsToMinutes = (ms: number) => {

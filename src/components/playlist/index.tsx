@@ -20,13 +20,14 @@ interface PlaylistProps {
     imgUri: string
     name: string
     description: string
+    onClick: () => void
 }
 
 export const Playlist: React.FC<PlaylistProps> = ({
-    imgUri, name, description,
+    imgUri, name, description, onClick,
 }) => {
     return (
-        <OuterWrapper>
+        <OuterWrapper onClick={onClick}>
             <StyledImage src={imgUri} alt="Playlist cover art" />
             <StyledTitle>{name}</StyledTitle>
             <StyledText>{description}</StyledText>

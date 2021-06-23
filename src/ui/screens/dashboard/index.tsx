@@ -5,7 +5,7 @@ import { TopMenu } from "../../../components/nav/top-menu";
 import { WithLayout } from "../../../hoc/withLayout";
 import { Home } from "../../../ui/screens/home";
 import { SideMenu } from "../../../components/nav/side-menu";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { PlaylistScreen } from "../playlists";
 
 const OuterWrapper = styled.div`
@@ -34,6 +34,15 @@ export const Dashboard: React.FC<DashboardProps> = ({
             [...currentTracks, trackUri] : 
             [trackUri]);
     }
+
+    const queueTracks = useCallback((trackUris: string[], overwriteQueue?: boolean) => {
+        debugger;
+        setTrackUris(queue => {
+            if (overwriteQueue) return trackUris;
+
+            return [...queue || [], ...trackUris];
+        });
+    }, [])
 
     return (
         <OuterWrapper>
@@ -67,6 +76,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                     {activeMenuItem === 1 && 
                         <PlaylistScreen 
                             accessToken={accessToken}
+                            queueTracks={queueTracks}
                         />}
                 </WithLayout> 
             }

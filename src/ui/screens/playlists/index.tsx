@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { SpotifyApi } from '../../../api/spotify';
-import { Playlist } from '../../../components/playlist';
+import { PlaylistCollection } from './components/playlists';
+import { TrackCollection } from './components/tracks';
 
 const OuterWrapper = styled.div`
     display: flex;
@@ -9,19 +10,27 @@ const OuterWrapper = styled.div`
     flex-wrap: wrap;
 `;
 
-const PlaylistWrapper = styled.div`
-    flex: 0 0 calc(25% - 4rem); // account for margin :)
-    margin: 2rem;
-`;
-
 interface PlaylistScreenProps {
     accessToken?: string
+    queueTracks: (tracksUris: string[], overwriteQueue?: boolean) => void
 }
 
 export const PlaylistScreen: React.FC<PlaylistScreenProps> = ({
-    accessToken
+    accessToken, queueTracks,
 }) => {
     const [playlists, setPlaylists] = useState<SpotifyApi.PlaylistObjectSimplified[]>([]);
+    const [trackList, setTrackList] = useState<SpotifyApi.PlaylistTrackObject[]>();
+    const [playlistUri, setPlaylistUri] = useState<string>();
+    const [playlistUris, setPlaylistUris] = useState<string[]>();
+
+    const onBack = () => {
+        setTrackList(undefined);
+        setPlaylistUri(undefined);
+    }
+
+    const onPlay = (trackUris: string[], startingSong?: string, shuffle?: boolean) => {
+        queueTracks(trackUris, true);
+    }
     
     useEffect(() => {
         if (!accessToken) return;
@@ -35,18 +44,44 @@ export const PlaylistScreen: React.FC<PlaylistScreenProps> = ({
 
     }, [accessToken]);
 
+    useEffect(() => {
+        if (!accessToken || !playlistUri) return;
+
+        console.log(playlistUri);
+        new SpotifyApi(accessToken)
+            .fetch<SpotifyApi.PlaylistTrackResponse>(playlistUri)
+            .then(res => setTrackList(res.data.items));
+
+    }, [accessToken, playlistUri]);
+
+    useEffect(() => {
+        if (!accessToken || !playlistUris || playlistUris.length === 0) return;
+
+        // WARNING: Increased risk of being rate-limited
+        // Here we hit all the endpoints since there isn't 1 AFAIK
+        const spotifyApi = new SpotifyApi(accessToken);
+        spotifyApi.fetchAll<SpotifyApi.SinglePlaylistResponse>(playlistUris)
+            .then(tracks => {
+                const flatTracks = tracks.flatMap(track => track.data.tracks.items);
+                queueTracks(flatTracks.map(track => track.track.uri), true);
+            });
+
+    }, [accessToken, playlistUris, queueTracks]);
+
     return (
         <OuterWrapper>
-            {(!playlists || playlists.length === 0) && <h2>No playlists found...</h2>}
-            {playlists.length > 0 && playlists.map((playlist) => (
-                <PlaylistWrapper>
-                    <Playlist
-                        imgUri={playlist.images[0].url}
-                        name={playlist.name}
-                        description={playlist.description || `by ${playlist.owner.display_name || playlist.owner.id}`}
-                    />
-                </PlaylistWrapper>
-            ))}
+            {!trackList && 
+                <PlaylistCollection 
+                    playlists={playlists}
+                    onPlaylistClick={uri => setPlaylistUri(uri)}
+                    onPlaylistShuffle={uris => setPlaylistUris(uris)}
+                />}
+            {trackList && 
+                <TrackCollection 
+                    tracks={trackList}
+                    onBack={onBack}
+                    onPlay={onPlay}
+                />}
         </OuterWrapper>
     );
 }
