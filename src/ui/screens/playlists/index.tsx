@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { SpotifyApi } from '../../../api/spotify';
+import { shuffle } from '../../../utils/collection/shuffle';
 import { PlaylistCollection } from './components/playlists';
 import { TrackCollection } from './components/tracks';
 
@@ -28,8 +29,9 @@ export const PlaylistScreen: React.FC<PlaylistScreenProps> = ({
         setPlaylistUri(undefined);
     }
 
-    const onPlay = (trackUris: string[], startingSong?: string, shuffle?: boolean) => {
-        queueTracks(trackUris, true);
+    const onPlay = (trackUris: string[], startingSong?: string, isShuffle?: boolean) => {
+        const uris = isShuffle ? shuffle(trackUris) : trackUris;
+        queueTracks(uris, true);
     }
     
     useEffect(() => {
@@ -62,7 +64,8 @@ export const PlaylistScreen: React.FC<PlaylistScreenProps> = ({
         spotifyApi.fetchAll<SpotifyApi.SinglePlaylistResponse>(playlistUris)
             .then(tracks => {
                 const flatTracks = tracks.flatMap(track => track.data.tracks.items);
-                queueTracks(flatTracks.map(track => track.track.uri), true);
+                const shuffledUris = shuffle(flatTracks.map(track => track.track.uri));
+                queueTracks(shuffledUris, true);
             });
 
     }, [accessToken, playlistUris, queueTracks]);
