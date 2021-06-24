@@ -47,7 +47,6 @@ export const PlaylistScreen: React.FC<PlaylistScreenProps> = ({
     useEffect(() => {
         if (!accessToken || !playlistUri) return;
 
-        console.log(playlistUri);
         new SpotifyApi(accessToken)
             .fetch<SpotifyApi.PlaylistTrackResponse>(playlistUri)
             .then(res => setTrackList(res.data.items));

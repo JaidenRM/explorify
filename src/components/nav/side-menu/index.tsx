@@ -36,7 +36,8 @@ export const SideMenu: React.FC<SideMenuProps> = ({
             <StyledList>
                 {menuItems.map((item, index) => {
                     return (
-                        <StyledListItem 
+                        <StyledListItem
+                            key={index}
                             isActive={index === activeMenuItem}
                             onClick={() => setActiveMenuItem(index)}
                         >

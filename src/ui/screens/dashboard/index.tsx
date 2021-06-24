@@ -36,7 +36,6 @@ export const Dashboard: React.FC<DashboardProps> = ({
     }
 
     const queueTracks = useCallback((trackUris: string[], overwriteQueue?: boolean) => {
-        debugger;
         setTrackUris(queue => {
             if (overwriteQueue) return trackUris;
 

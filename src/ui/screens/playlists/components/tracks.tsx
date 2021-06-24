@@ -1,16 +1,21 @@
 import styled from "styled-components";
-import { SearchTrackItem } from "../../../../components/search/components/search-track-item";
+import { Tracklist } from "../../../../components/tracklist";
 import { PrimaryButton } from "../../../shared/buttons/primary";
 
 const OuterWrapper = styled.div`
+    width: 100%;
 `;
 
 const TracksWrapper = styled.div`
+    padding: 2rem;
 `;
 
 const OptionsWrapper = styled.div`
     width: 100%;
-    justify-content: space-evenly;
+    
+    & > * {
+        margin: 0 2rem;
+    }
 `;
 
 interface TrackCollectionProps {
@@ -33,17 +38,9 @@ export const TrackCollection: React.FC<TrackCollectionProps> = ({
                 </PrimaryButton>
             </OptionsWrapper>
             <TracksWrapper>
-                {tracks.map((track, index) => (
-                    <SearchTrackItem
-                        key={index}
-                        ranking={index + 1}
-                        artCoverUrl={track.track.album.images[0].url}
-                        artistsNames={track.track.artists.map(artist => artist.name)}
-                        trackName={track.track.name}
-                        durationMs={track.track.duration_ms}
-                        albumnName={track.track.album.name}
-                    />
-                ))}
+                <Tracklist
+                    tracks={tracks.map(track => track.track)}
+                />
             </TracksWrapper>
         </OuterWrapper>
     );

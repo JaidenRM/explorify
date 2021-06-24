@@ -1,6 +1,7 @@
 import styled from "styled-components";
 
 const OuterWrapper = styled.div`
+    cursor: pointer;
 `;
 
 const StyledImage = styled.img`
