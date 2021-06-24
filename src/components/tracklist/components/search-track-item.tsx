@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { RankingWrapper, ImageWrapper, TrackArtistWrapper, AlbumWrapper, DurationWrapper } from "../index.styles";
 
 const OuterWrapper = styled.div`
     width: 100%;
@@ -9,23 +10,6 @@ const OuterWrapper = styled.div`
         padding: 0.5rem 1rem;
     }
 `;
-const RankingWrapper = styled.div`
-    flex: 1 10;
-`;
-const ImageWrapper = styled.div`
-    flex: 1 2;
-`;
-const TrackArtistWrapper = styled.div`
-    flex: 8;
-`;
-const AlbumWrapper = styled.div`
-    flex: 5;
-`;
-const DurationWrapper = styled.div`
-    flex: 1 3;
-`;
-
-
 
 interface TrackItemProps {
     ranking: number
@@ -34,13 +18,16 @@ interface TrackItemProps {
     trackName: string
     albumnName: string
     durationMs: number
-    onClick: () => void
+    onClick?: () => void
 }
 
-const convertMsToMinutes = (ms: number) => {
-    const roundToTwoPlaces = ms * 100 / (1000 * 60);
+const parseMsToMinsStr = (ms: number): string => {
+    const msToSecs = 1000;
+    const secsToMins = 60;
+    const seconds = Math.round(ms / msToSecs);
+    const remainingSeconds = seconds % secsToMins;
 
-    return Math.round(roundToTwoPlaces) / 100;
+    return `${ Math.floor(seconds / secsToMins) }:${ remainingSeconds >= 10 ? remainingSeconds : `0${ remainingSeconds }` }`;
 }
 
 export const SearchTrackItem: React.FC<TrackItemProps> = ({
@@ -62,7 +49,7 @@ export const SearchTrackItem: React.FC<TrackItemProps> = ({
                 {albumnName}
             </AlbumWrapper>
             <DurationWrapper>
-                {convertMsToMinutes(durationMs)}
+                {parseMsToMinsStr(durationMs)}
             </DurationWrapper>
         </OuterWrapper>
     );

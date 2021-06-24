@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Login } from './ui/screens/login';
 import { useEffect } from 'react';
-import { Home } from './ui/screens/home';
+import { Dashboard } from './ui/screens/dashboard';
 import { MyThemeProvider } from './contexts/theme-context';
 import styled from 'styled-components';
 
@@ -21,7 +21,7 @@ const App = () => {
   return (
     <MyThemeProvider>
       <OuterWrapper>
-        { code ? <Home code={code}/> : <Login/> }
+        { code ? <Dashboard code={code}/> : <Login/> }
       </OuterWrapper>
     </MyThemeProvider>
   );

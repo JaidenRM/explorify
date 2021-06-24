@@ -26,7 +26,7 @@ const PrimaryButtonWrapper = styled.div`
 `;
 
 export const Login = () => {
-    const spotifyAuthLink = createSpotifyAuthLink({});
+    const spotifyAuthLink = createSpotifyAuthLink();
     const openAuthLinkNewTab = () => window.open(spotifyAuthLink, '_blank')?.focus();
 
     return (
