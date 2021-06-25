@@ -25,6 +25,7 @@ export const SpotifyPlayer: React.FC<SpotifyPlayerProps> = ({
             showSaveIcon={hasSaveIcon}
             uris={songUris}
             magnifySliderOnHover
+            name="Explorify"
             play={play}
             callback={state => {
                 if (!state.isPlaying) setPlay(false);

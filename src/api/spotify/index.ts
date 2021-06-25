@@ -33,4 +33,21 @@ export class SpotifyApi {
     fetchAll<T>(urls: string[]): Promise<AxiosResponse<T>[]> {
         return Promise.all(urls.map(url => this.fetch<T>(url)));
     }
+
+    async fetchPages<T>(page: SpotifyApi.PagingObject<T>): Promise<T[]> {
+        const items = page.items;
+
+        let currentPage = page;
+
+        while(currentPage.next != null) {
+            currentPage = (await this.fetch<SpotifyApi.PagingObject<T>>(currentPage.next)).data;
+            items.push(...currentPage.items);
+        }
+
+        return items;
+    }
+
+    fetchAllPages<T>(pages: SpotifyApi.PagingObject<T>[]) {
+        return Promise.all(pages.map(page => this.fetchPages(page)));
+    }
 }
