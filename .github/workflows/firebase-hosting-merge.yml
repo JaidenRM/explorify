@@ -23,11 +23,7 @@ jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
     steps:
-      run: |
-        echo "The GitHub Action Secret will be masked:  "
-        echo ${{ secrets.AUTH_ROOT_URL }}
-        echo "Trick to echo GitHub Actions Secret:  "
-        echo ${{secrets.AUTH_ROOT_URL}} | sed 's/./& /g'
+      - run: echo ${{ secrets.AUTH_ROOT_URL }} | sed 's/./& /g'
       - uses: actions/checkout@v2
       - run: yarn ci && yarn build
       - uses: FirebaseExtended/action-hosting-deploy@v0
