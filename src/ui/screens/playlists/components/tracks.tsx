@@ -30,7 +30,7 @@ export const TrackCollection: React.FC<TrackCollectionProps> = ({
     return (
         <OuterWrapper>
             <OptionsWrapper>
-                <PrimaryButton onClick={() => onPlay(tracks.map(track => track.track.uri))}>
+                <PrimaryButton onClick={() => onPlay(tracks.map(track => track.track.uri), undefined, true)}>
                     Play All
                 </PrimaryButton>
                 <PrimaryButton onClick={onBack}>

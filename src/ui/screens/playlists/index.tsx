@@ -49,9 +49,11 @@ export const PlaylistScreen: React.FC<PlaylistScreenProps> = ({
     useEffect(() => {
         if (!accessToken || !playlistUri) return;
 
-        new SpotifyApi(accessToken)
+        const spotifyApi = new SpotifyApi(accessToken);
+        spotifyApi
             .fetch<SpotifyApi.PlaylistTrackResponse>(playlistUri)
-            .then(res => setTrackList(res.data.items));
+            .then(res => spotifyApi.fetchPages(res.data))
+            .then(tracks => setTrackList(tracks));
 
     }, [accessToken, playlistUri]);
 
@@ -63,7 +65,11 @@ export const PlaylistScreen: React.FC<PlaylistScreenProps> = ({
         const spotifyApi = new SpotifyApi(accessToken);
         spotifyApi.fetchAll<SpotifyApi.SinglePlaylistResponse>(playlistUris)
             .then(tracks => {
-                const flatTracks = tracks.flatMap(track => track.data.tracks.items);
+                const pages = tracks.map(track => track.data.tracks);
+                return spotifyApi.fetchAllPages(pages);
+            })
+            .then(pages => {
+                const flatTracks = pages.flatMap(track => track);
                 const shuffledUris = shuffle(flatTracks.map(track => track.track.uri));
                 queueTracks(shuffledUris, true);
             });
