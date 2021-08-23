@@ -1,105 +1,122 @@
 import axios, { AxiosResponse } from "axios";
 import { stringify } from "query-string";
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react";
 
 // Note the use snake_case is in tandem of the Spotify API naming
 interface SpotifyTokenResponse {
-    access_token: string // used to access their web api
-    token_type: string // always 'Bearer'
-    scope: string // scopes we are allowed
-    expires_in: number // seconds
-    refresh_token: string // used this in lieu of the auth code to get another token set
+  access_token: string; // used to access their web api
+  token_type: string; // always 'Bearer'
+  scope: string; // scopes we are allowed
+  expires_in: number; // seconds
+  refresh_token: string; // used this in lieu of the auth code to get another token set
 }
 
 interface SpotifyAuthCodeRequest {
-    grant_type: string // 'authorization_code'
-    code: string // the actual auth code received earlier
-    redirect_uri: string // needs to match OG one used
-    client_id: string // Can pass here or in header as base64 combo
-    client_secret: string // ditto^
+  grant_type: string; // 'authorization_code'
+  code: string; // the actual auth code received earlier
+  redirect_uri: string; // needs to match OG one used
+  client_id: string; // Can pass here or in header as base64 combo
+  client_secret: string; // ditto^
 }
 
 interface SpotifyRefreshTokenRequest {
-    grant_type: string // 'refresh_token'
-    refresh_token: string
-    client_id: string
-    client_secret: string
+  grant_type: string; // 'refresh_token'
+  refresh_token: string;
+  client_id: string;
+  client_secret: string;
 }
 
-const spotifyTokenUrl = 'https://accounts.spotify.com/api/token';
+const spotifyTokenUrl = "https://accounts.spotify.com/api/token";
 const headers = {
-    'Content-Type': 'application/x-www-form-urlencoded',
-    'Accept': 'application/json',
-}
+  "Content-Type": "application/x-www-form-urlencoded",
+  Accept: "application/json",
+};
 
 export const useAuth = (code: string) => {
-    const [isLoading, setIsLoading] = useState(true);
-    const [accessToken, setAccessToken] = useState<string>();
-    const [refreshToken, setRefreshToken] = useState<string>();
-    const [expiresIn, setExpiresIn] = useState<number>();
-    const [error, setError] = useState<string>();
+  const [isLoading, setIsLoading] = useState(true);
+  const [accessToken, setAccessToken] = useState<string>();
+  const [refreshToken, setRefreshToken] = useState<string>();
+  const [expiresIn, setExpiresIn] = useState<number>();
+  const [error, setError] = useState<string>();
 
-    useEffect(() => {
-        const body = {
-            grant_type: 'authorization_code',
-            code,
-            redirect_uri: process.env.REACT_APP_AUTH_ROOT_URL,
-            client_id: process.env.REACT_APP_CLIENT_ID,
-            client_secret: process.env.REACT_APP_CLIENT_SECRET,
-        };
+  const refetchRefreshToken = useCallback(() => {
+    const body = {
+      grant_type: "refresh_token",
+      refresh_token: refreshToken,
+    };
+    const base64Header = {
+      headers: {
+        Authorization: `Basic ${btoa(
+          process.env.REACT_APP_CLIENT_ID +
+            ":" +
+            process.env.REACT_APP_CLIENT_SECRET
+        )}`,
+      },
+    };
 
-        axios
-            .post<SpotifyAuthCodeRequest, AxiosResponse<SpotifyTokenResponse>>(
-                spotifyTokenUrl, stringify(body), { headers })
-            .then(res => {
-                const { access_token, refresh_token, expires_in } = res.data;
+    axios
+      .post<SpotifyRefreshTokenRequest, AxiosResponse<SpotifyTokenResponse>>(
+        spotifyTokenUrl,
+        stringify(body),
+        base64Header
+      )
+      .then((res) => {
+        const { access_token, refresh_token, expires_in } = res.data;
 
-                setAccessToken(access_token);
-                setRefreshToken(refresh_token);
-                setExpiresIn(expires_in);
-                setIsLoading(false);
+        setAccessToken(access_token);
+        setExpiresIn(expires_in);
+        if (refresh_token) setRefreshToken(refresh_token);
+      })
+      .catch((err) => {
+        setError(err.message);
+      });
+  }, [refreshToken]);
 
-                // clean up url and remove code from it
-                window.history.pushState({}, '', '/'); 
-            })
-            .catch(err => {
-                setError(err.message);
-            });
-    }, [code]);
+  useEffect(() => {
+    const body = {
+      grant_type: "authorization_code",
+      code,
+      redirect_uri: process.env.REACT_APP_AUTH_ROOT_URL,
+      client_id: process.env.REACT_APP_CLIENT_ID,
+      client_secret: process.env.REACT_APP_CLIENT_SECRET,
+    };
 
-    useEffect(() => {
-        if (!refreshToken || !expiresIn) return;
+    axios
+      .post<SpotifyAuthCodeRequest, AxiosResponse<SpotifyTokenResponse>>(
+        spotifyTokenUrl,
+        stringify(body),
+        { headers }
+      )
+      .then((res) => {
+        const { access_token, refresh_token, expires_in } = res.data;
 
-        const body = {
-            grant_type: 'refresh_token',
-            refresh_token: refreshToken,
-        };
-        const base64Header = {
-            headers: {
-                Authorization: `Basic ${btoa(process.env.REACT_APP_CLIENT_ID + ':' + process.env.REACT_APP_CLIENT_SECRET)}`,
-            }
-        };
+        setAccessToken(access_token);
+        setRefreshToken(refresh_token);
+        setExpiresIn(expires_in);
+        setIsLoading(false);
 
-        // interval bc this is a recurring process
-        const timeout = setInterval(() => {
-            axios
-                .post<SpotifyRefreshTokenRequest, AxiosResponse<SpotifyTokenResponse>>(
-                    spotifyTokenUrl, stringify(body), base64Header)
-                .then(res => {
-                    const { access_token, refresh_token, expires_in } = res.data;
+        // clean up url and remove code from it
+        window.history.pushState({}, "", "/");
+      })
+      .catch((err) => {
+        setError(err.message);
+      });
+  }, [code]);
 
-                    setAccessToken(access_token);
-                    setExpiresIn(expires_in);
-                    if (refresh_token) setRefreshToken(refresh_token);
-                })
-                .catch(err => {
-                    setError(err.message);
-                });
-        }, (expiresIn - 60) * 1000); //1 min before expiry
+  useEffect(() => {
+    if (!refreshToken || !expiresIn) return;
 
-        //clear on error
-        return () => clearInterval(timeout);
-    }, [expiresIn, refreshToken])
+    // interval bc this is a recurring process
+    const timeout = setInterval(refetchRefreshToken, (expiresIn - 60) * 1000); //1 min before expiry
 
-    return { accessToken, isLoading, error };
-}
+    //clear on error
+    return () => clearInterval(timeout);
+  }, [expiresIn, refreshToken, refetchRefreshToken]);
+
+  return {
+    accessToken,
+    isLoading,
+    error,
+    refetchRefreshToken,
+  };
+};

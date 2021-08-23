@@ -1,35 +1,46 @@
 import { useEffect, useState } from "react";
-import SpotifyWebPlayer from "react-spotify-web-playback/lib";
+import SpotifyWebPlayer, { STATUS } from "react-spotify-web-playback/lib";
 
 interface SpotifyPlayerProps {
-    accessToken?: string
-    hasSaveIcon?: boolean
-    songUris?: string[]
+  accessToken?: string;
+  hasSaveIcon?: boolean;
+  songUris?: string[];
 }
 
 export const SpotifyPlayer: React.FC<SpotifyPlayerProps> = ({
-    accessToken, hasSaveIcon, songUris,
+  accessToken,
+  hasSaveIcon,
+  songUris,
 }) => {
-    const [play, setPlay] = useState(false);
+  const [play, setPlay] = useState(false);
+  const [playerToken, setPlayerToken] = useState(accessToken);
 
-    useEffect(() => {
-        if (accessToken && songUris) setPlay(true);
+  useEffect(() => {
+    if (accessToken && songUris) setPlay(true);
+  }, [songUris, accessToken]);
 
-    }, [songUris, accessToken]);
+  if (!playerToken) return null;
 
-    if (!accessToken) return null;
+  return (
+    <SpotifyWebPlayer
+      token={playerToken}
+      showSaveIcon={hasSaveIcon}
+      uris={songUris}
+      magnifySliderOnHover
+      name="Explorify"
+      play={play}
+      callback={(state) => {
+        setPlay(state.isPlaying);
 
-    return (
-        <SpotifyWebPlayer
-            token={accessToken}
-            showSaveIcon={hasSaveIcon}
-            uris={songUris}
-            magnifySliderOnHover
-            name="Explorify"
-            play={play}
-            callback={state => {
-                if (!state.isPlaying) setPlay(false);
-            }}
-        />
-    );
-}
+        if (
+          state.status === STATUS.ERROR &&
+          state.errorType === "authentication_error"
+        ) {
+          console.log("AUTH ERROR");
+          // Player messes up if I assign before it asks
+          setPlayerToken(accessToken);
+        }
+      }}
+    />
+  );
+};
