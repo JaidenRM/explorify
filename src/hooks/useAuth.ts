@@ -32,6 +32,19 @@ const headers = {
     'Accept': 'application/json',
 }
 
+// This logs out of spotify.com so the web player fully. If just want to logout on this app,
+// then clear token and retrigger this workflow with `show_dialog=true`
+const logout = () => {
+    const url = 'https://accounts.spotify.com/en/logout'                                                                                                                                                                                                                                                                               
+    const spotifyLogoutWindow = window.open(url, 'Spotify Logout', 'width=700,height=500,top=40,left=40')                                                                                                
+    
+    if (spotifyLogoutWindow) 
+        setTimeout(() => {
+            spotifyLogoutWindow.close();
+            window.location.reload();
+        }, 2000);
+}
+
 export const useAuth = (code: string) => {
     const [isLoading, setIsLoading] = useState(true);
     const [accessToken, setAccessToken] = useState<string>();
@@ -101,5 +114,5 @@ export const useAuth = (code: string) => {
         return () => clearInterval(timeout);
     }, [expiresIn, refreshToken])
 
-    return { accessToken, isLoading, error };
+    return { accessToken, isLoading, error, logout };
 }
