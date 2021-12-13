@@ -9,5 +9,8 @@ export const darkTheme: DefaultTheme = {
             bg: '#1DB954',
             fg: '#FFFFFF',
         },
+    },
+    zIndex: {
+        menu: 1000
     }
 }

@@ -24,16 +24,20 @@ const BodyWrapper = styled.div`
 `;
 
 const SideMenuWrapper = styled.div`
-    flex: 0 0 20%;
-    overflow-y: auto;
-    box-shadow: 0rem 0.25rem 0.5rem 0 ${ ({ theme }) => theme.palette.text };
-    z-index: 1000;
-`;
+    ${ ({ theme }) => `
+        flex: 0 0 20%;
+        overflow-y: auto;
+        box-shadow: 0rem 0.25rem 0.5rem 0 ${ theme.palette.text };
+        z-index: ${ theme.zIndex.menu };
+    `
+}`;
 
 const TopMenuWrapper = styled.div`
-    box-shadow: 0.25rem 0 0.5rem 0 ${ ({ theme }) => theme.palette.text };
-    z-index: 1000;
-`;
+    ${ ({ theme }) => `
+        box-shadow: 0.25rem 0 0.5rem 0 ${ theme.palette.text };
+        z-index: ${ theme.zIndex.menu };
+    `
+}`;
 
 const BodyContentWrapper = styled.div`
     flex-grow: 1;

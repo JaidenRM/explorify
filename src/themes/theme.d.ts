@@ -13,5 +13,8 @@ declare module 'styled-components' {
       text: string
       primary: IPalette
     }
+    zIndex: {
+      menu: number
+    }
   }
 }
