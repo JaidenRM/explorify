@@ -11,6 +11,9 @@ const OuterWrapper = styled.div`
 `;
 
 const OptionsWrapper = styled.div`
+  position: sticky;
+  top: 0;
+
   & > * {
     margin: 0rem 2rem;
   }
@@ -27,7 +30,7 @@ const PlaylistWrapper = styled.div`
 `;
 
 const PlaylistItemWrapper = styled.div<{ isSelected: boolean }>`
-  flex: 1 1 calc(25% - 4rem); // account for margin :)
+  flex: 0 1 calc(25% - 4rem);
   padding: 1rem;
   margin: 1rem;
   outline: ${({ theme, isSelected }) =>

@@ -12,6 +12,8 @@ const TracksWrapper = styled.div`
 
 const OptionsWrapper = styled.div`
     width: 100%;
+    position: sticky;
+    top: 0;
     
     & > * {
         margin: 0 2rem;
