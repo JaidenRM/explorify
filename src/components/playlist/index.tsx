@@ -3,14 +3,18 @@ import { sanitise } from "../../utils/string";
 
 const OuterWrapper = styled.div`
   cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 `;
 
 const StyledImage = styled.img`
   height: 100%;
   width: 100%;
+  object-fit: cover;
 `;
 
-const StyledTitle = styled.h2``;
+const StyledTitle = styled.h2`flex: 1;`;
 
 const StyledText = styled.span`
   word-break: break-word;
