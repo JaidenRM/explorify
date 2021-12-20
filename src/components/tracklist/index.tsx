@@ -42,9 +42,7 @@ export const Tracklist: React.FC<TracklistProps> = ({
                         trackName={track.name}
                         durationMs={track.duration_ms}
                         albumnName={track.album.name}
-                        onClick={() => {
-                            if (onTrackSelected) onTrackSelected(track.uri);
-                        }}
+                        onClick={onTrackSelected ? () => onTrackSelected(track.uri) : undefined}
                     />
                 ))}
             </TrackItemsWrapper>

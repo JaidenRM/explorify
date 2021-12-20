@@ -9,6 +9,13 @@ const OuterWrapper = styled.div`
     & > div {
         padding: 0.5rem 1rem;
     }
+
+    ${({ onClick, theme }) => onClick && `
+        &:hover {
+            cursor: pointer;
+            background: ${ theme.palette.primary.bg };
+        }
+    `}
 `;
 
 interface TrackItemProps {

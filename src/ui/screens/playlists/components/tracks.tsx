@@ -42,6 +42,7 @@ export const TrackCollection: React.FC<TrackCollectionProps> = ({
             <TracksWrapper>
                 <Tracklist
                     tracks={tracks.map(track => track.track)}
+                    onTrackSelected={uri => onPlay([uri])}
                 />
             </TracksWrapper>
         </OuterWrapper>
