@@ -29,6 +29,7 @@ const SideMenuWrapper = styled.div`
         overflow-y: auto;
         box-shadow: 0rem 0.25rem 0.5rem 0 ${ theme.palette.text };
         z-index: ${ theme.zIndex.menu };
+        min-width: 150px;
     `
 }`;
 

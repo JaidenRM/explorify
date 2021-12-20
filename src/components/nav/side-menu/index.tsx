@@ -13,6 +13,8 @@ const StyledListItem = styled.li<{ isActive: boolean }>`
     color: ${ ({ theme, isActive }) => isActive ? theme.palette.primary.bg : 'inherit' };
     margin: 3rem auto;
     font-size: 2rem;
+    text-overflow: ellipsis;
+    overflow-x: hidden;
 
     &:hover {
         cursor: pointer;
@@ -40,6 +42,7 @@ export const SideMenu: React.FC<SideMenuProps> = ({
                             key={index}
                             isActive={index === activeMenuItem}
                             onClick={() => setActiveMenuItem(index)}
+                            title={item}
                         >
                             {item}
                         </StyledListItem>
