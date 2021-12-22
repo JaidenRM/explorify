@@ -4,26 +4,28 @@ import { PrimaryButton } from "../../../ui/shared/buttons/primary";
 import { capitaliseFirstLetter } from "../../../utils/string";
 
 const StyledMenu = styled.div`
-  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem 2rem;
 `;
 
-const FloatRightWrapper = styled.div`
-  float: right;
-  position: relative;
-  z-index: 69;
-  margin: 1rem;
-`;
+interface TopMenuProps {
+  logoutFn?: () => void
+}
 
-export const TopMenu: React.FC = () => {
+export const TopMenu: React.FC<TopMenuProps> = ({ logoutFn }) => {
     const [theme, { toggleDarkLightTheme }] = useMyThemeContext();
 
     return (
-        <StyledMenu>
-            <FloatRightWrapper>
-              <PrimaryButton onClick={toggleDarkLightTheme}>
-                  {capitaliseFirstLetter(theme.id)}
-              </PrimaryButton>
-            </FloatRightWrapper>
-        </StyledMenu>
+      <StyledMenu>
+        <PrimaryButton onClick={toggleDarkLightTheme}>
+            {capitaliseFirstLetter(theme.id)}
+        </PrimaryButton>
+        { logoutFn && (
+          <PrimaryButton onClick={logoutFn}>
+              Logout
+          </PrimaryButton>
+        )}
+      </StyledMenu>
     );
 }

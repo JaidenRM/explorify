@@ -25,7 +25,7 @@ interface DashboardProps {
 export const Dashboard: React.FC<DashboardProps> = ({
     code
 }) => {
-    const { accessToken, isLoading, error } = useAuth(code);
+    const { accessToken, isLoading, error, logout } = useAuth(code);
     const [trackUris, setTrackUris] = useState<string[]>();
     const [activeMenuItem, setActiveMenuItem] = useState(0);
 
@@ -54,7 +54,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 </ErrorWrapper>}
             { !isLoading && !error && 
                 <WithLayout
-                    TopMenu={<TopMenu />}
+                    TopMenu={
+                        <TopMenu 
+                            logoutFn={logout}
+                        />}
                     SideMenu={
                         <SideMenu 
                             activeMenuItem={activeMenuItem}

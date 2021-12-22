@@ -12,6 +12,8 @@ const TracksWrapper = styled.div`
 
 const OptionsWrapper = styled.div`
     width: 100%;
+    position: sticky;
+    top: 0;
     
     & > * {
         margin: 0 2rem;
@@ -40,6 +42,7 @@ export const TrackCollection: React.FC<TrackCollectionProps> = ({
             <TracksWrapper>
                 <Tracklist
                     tracks={tracks.map(track => track.track)}
+                    onTrackSelected={uri => onPlay([uri])}
                 />
             </TracksWrapper>
         </OuterWrapper>

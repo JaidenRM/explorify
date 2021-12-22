@@ -9,5 +9,8 @@ export const lightTheme: DefaultTheme = {
             bg: '#1DB954',
             fg: '#FFFFFF',
         },
+    },
+    zIndex: {
+        menu: 1000
     }
 }

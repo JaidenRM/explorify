@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { SpotifyApi } from '../../../api/spotify';
 import { shuffle } from '../../../utils/collection/shuffle';
@@ -23,6 +23,7 @@ export const PlaylistScreen: React.FC<PlaylistScreenProps> = ({
     const [trackList, setTrackList] = useState<SpotifyApi.PlaylistTrackObject[]>();
     const [playlistUri, setPlaylistUri] = useState<string>();
     const [playlistUris, setPlaylistUris] = useState<string[]>();
+    const containerRef = useRef<HTMLDivElement>(null);
 
     const onBack = () => {
         setTrackList(undefined);
@@ -76,8 +77,12 @@ export const PlaylistScreen: React.FC<PlaylistScreenProps> = ({
 
     }, [accessToken, playlistUris, queueTracks]);
 
+    useEffect(() => {
+        containerRef.current?.parentElement?.scrollTo(0, 0);
+    }, [trackList])
+
     return (
-        <OuterWrapper>
+        <OuterWrapper ref={containerRef}>
             {!trackList && 
                 <PlaylistCollection 
                     playlists={playlists}
