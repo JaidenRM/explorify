@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { SpotifyApi } from '../../../api/spotify';
 import { shuffle } from '../../../utils/collection/shuffle';
+import { LoadingScreen } from '../loading';
 import { PlaylistCollection } from './components/playlists';
 import { TrackCollection } from './components/tracks';
 
@@ -9,6 +10,7 @@ const OuterWrapper = styled.div`
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
+    height: 100%;
 `;
 
 interface PlaylistScreenProps {
@@ -23,6 +25,7 @@ export const PlaylistScreen: React.FC<PlaylistScreenProps> = ({
     const [trackList, setTrackList] = useState<SpotifyApi.PlaylistTrackObject[]>();
     const [playlistUri, setPlaylistUri] = useState<string>();
     const [playlistUris, setPlaylistUris] = useState<string[]>();
+    const [isLoading, setIsLoading] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
 
     const onBack = () => {
@@ -37,30 +40,37 @@ export const PlaylistScreen: React.FC<PlaylistScreenProps> = ({
     
     useEffect(() => {
         if (!accessToken) return;
-
+        
+        setIsLoading(true);
         const spotifyApi = new SpotifyApi(accessToken);
         spotifyApi.playlistApi
             .getUserPlaylists(50)
             .then((playlists) => {
                 setPlaylists(playlists.data.items);
-            });
+            })
+            .then(() => setIsLoading(false));
+
+        //setIsLoading(false);
 
     }, [accessToken]);
 
     useEffect(() => {
         if (!accessToken || !playlistUri) return;
 
+        setIsLoading(true);
         const spotifyApi = new SpotifyApi(accessToken);
         spotifyApi
             .fetch<SpotifyApi.PlaylistTrackResponse>(playlistUri)
             .then(res => spotifyApi.fetchPages(res.data))
-            .then(tracks => setTrackList(tracks));
+            .then(tracks => setTrackList(tracks))
+            .then(() => setIsLoading(false));
 
     }, [accessToken, playlistUri]);
 
     useEffect(() => {
         if (!accessToken || !playlistUris || playlistUris.length === 0) return;
 
+        setIsLoading(true);
         // WARNING: Increased risk of being rate-limited
         // Here we hit all the endpoints since there isn't 1 AFAIK
         const spotifyApi = new SpotifyApi(accessToken);
@@ -73,7 +83,8 @@ export const PlaylistScreen: React.FC<PlaylistScreenProps> = ({
                 const flatTracks = pages.flatMap(track => track);
                 const shuffledUris = shuffle(flatTracks.map(track => track.track.uri));
                 queueTracks(shuffledUris, true);
-            });
+            })
+            .then(() => setIsLoading(false));
 
     }, [accessToken, playlistUris, queueTracks]);
 
@@ -83,18 +94,23 @@ export const PlaylistScreen: React.FC<PlaylistScreenProps> = ({
 
     return (
         <OuterWrapper ref={containerRef}>
-            {!trackList && 
-                <PlaylistCollection 
-                    playlists={playlists}
-                    onPlaylistClick={uri => setPlaylistUri(uri)}
-                    onPlaylistShuffle={uris => setPlaylistUris(uris)}
-                />}
-            {trackList && 
-                <TrackCollection 
-                    tracks={trackList}
-                    onBack={onBack}
-                    onPlay={onPlay}
-                />}
+            {isLoading && <LoadingScreen />}
+            {!isLoading && (
+                <>
+                    {!trackList &&
+                        <PlaylistCollection 
+                            playlists={playlists}
+                            onPlaylistClick={uri => setPlaylistUri(uri)}
+                            onPlaylistShuffle={uris => setPlaylistUris(uris)}
+                        />}
+                    {trackList && 
+                        <TrackCollection 
+                            tracks={trackList}
+                            onBack={onBack}
+                            onPlay={onPlay}
+                        />}
+                </>
+            )}
         </OuterWrapper>
     );
 }
