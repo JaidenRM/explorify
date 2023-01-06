@@ -1,21 +1,23 @@
 import { useEffect, useState } from "react";
-import SpotifyWebPlayer from "react-spotify-web-playback/lib";
+import SpotifyWebPlayer, { SpotifyPlayerTrack } from "react-spotify-web-playback/lib";
 
 interface SpotifyPlayerProps {
     accessToken?: string
     hasSaveIcon?: boolean
-    songUris?: string[]
+    trackUris?: string[]
+    onTrackChange?: (track?: SpotifyPlayerTrack) => void
 }
 
 export const SpotifyPlayer: React.FC<SpotifyPlayerProps> = ({
-    accessToken, hasSaveIcon, songUris,
+    accessToken, hasSaveIcon, trackUris, onTrackChange
 }) => {
     const [play, setPlay] = useState(false);
+    const [currentTrackId, setCurrentTrackId] = useState<string>();
 
     useEffect(() => {
-        if (accessToken && songUris) setPlay(true);
+        if (accessToken && trackUris) setPlay(true);
 
-    }, [songUris, accessToken]);
+    }, [trackUris, accessToken]);
 
     if (!accessToken) return null;
 
@@ -23,12 +25,16 @@ export const SpotifyPlayer: React.FC<SpotifyPlayerProps> = ({
         <SpotifyWebPlayer
             token={accessToken}
             showSaveIcon={hasSaveIcon}
-            uris={songUris}
+            uris={trackUris}
             magnifySliderOnHover
             name="Explorify"
             play={play}
             callback={state => {
                 if (!state.isPlaying) setPlay(false);
+                if (state.track.id !== currentTrackId) {
+                    if (onTrackChange) onTrackChange(state.track);
+                    setCurrentTrackId(state.track.id);
+                }
             }}
         />
     );

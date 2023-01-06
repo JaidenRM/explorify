@@ -50,8 +50,6 @@ export const PlaylistScreen: React.FC<PlaylistScreenProps> = ({
             })
             .then(() => setIsLoading(false));
 
-        //setIsLoading(false);
-
     }, [accessToken]);
 
     useEffect(() => {

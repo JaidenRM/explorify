@@ -27,7 +27,7 @@ interface SideMenuProps {
 }
 
 const menuItems = [
-    'Home', 'Playlists'
+    'Home', 'Playlists', 'Queue'
 ];
 
 export const SideMenu: React.FC<SideMenuProps> = ({
