@@ -1,17 +1,20 @@
 import axios, { AxiosResponse } from "axios";
 import { SpotifyPlaylistApi } from "./modules/playlist";
 import { SpotifySearchApi } from "./modules/search";
+import { SpotifyTracksApi } from "./modules/tracks";
 
 export class SpotifyApi {
 
     private _accessToken: string;
     public searchApi: SpotifySearchApi;
     public playlistApi: SpotifyPlaylistApi;
+    public tracksApi: SpotifyTracksApi;
 
     constructor(accessToken: string) {
         this._accessToken = accessToken;
         this.searchApi = new SpotifySearchApi(accessToken);
         this.playlistApi = new SpotifyPlaylistApi(accessToken);
+        this.tracksApi = new SpotifyTracksApi(accessToken);
     }
 
     set accessToken(token: string) {

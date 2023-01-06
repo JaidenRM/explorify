@@ -8,6 +8,8 @@ import { SideMenu } from "../../../components/nav/side-menu";
 import { useCallback, useState } from "react";
 import { PlaylistScreen } from "../playlists";
 import { LoadingScreen } from "../loading";
+import { QueueScreen } from "../queue";
+import { SpotifyPlayerTrack } from "react-spotify-web-playback/lib";
 
 const OuterWrapper = styled.div`
   width: 100%;
@@ -27,6 +29,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ code }) => {
   const { accessToken, isLoading, error, logout } = useAuth(code);
   const [trackUris, setTrackUris] = useState<string[]>();
   const [activeMenuItem, setActiveMenuItem] = useState(0);
+  const [currentTrack, setCurrentTrack] = useState<SpotifyPlayerTrack>();
 
   const addTrackToQueue = (trackUri: string) => {
     setTrackUris((currentTracks) =>
@@ -44,6 +47,15 @@ export const Dashboard: React.FC<DashboardProps> = ({ code }) => {
     },
     []
   );
+
+  const getTrackUrisForQueue = useCallback(() => {
+    if (!currentTrack?.uri || !trackUris) return [];
+
+    const currTrackIndex = trackUris.findIndex(uri => uri === currentTrack.uri);
+    if (currTrackIndex < 0) return [];
+    
+    return trackUris.slice(currTrackIndex, trackUris.length);
+  }, [trackUris, currentTrack]);
 
   return (
     <OuterWrapper>
@@ -68,7 +80,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ code }) => {
             <SpotifyPlayer
               accessToken={accessToken}
               hasSaveIcon
-              songUris={trackUris}
+              trackUris={trackUris}
+              onTrackChange={setCurrentTrack}
             />
           }
         >
@@ -79,6 +92,12 @@ export const Dashboard: React.FC<DashboardProps> = ({ code }) => {
             <PlaylistScreen
               accessToken={accessToken}
               queueTracks={queueTracks}
+            />
+          )}
+          {activeMenuItem === 2 && (
+            <QueueScreen
+              trackUris={getTrackUrisForQueue()}
+              accessToken={accessToken}
             />
           )}
         </WithLayout>
